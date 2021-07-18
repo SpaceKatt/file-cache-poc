@@ -7,7 +7,7 @@
         "build": "tsc -b .",
         "lint": "eslint -c .eslint.js './src/**/*.ts'",
         "start": "npm run build && node build/src/index.js",
-        "test": "jest --colors --verbose"
+        "test": "jest --config=.jest.config.js --colors --verbose"
     },
     "repository": {
         "type": "git",

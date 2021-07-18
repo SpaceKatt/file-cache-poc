@@ -1,7 +1,9 @@
+os: linux
+dist: xenial
+language: shell
 jobs:
     include:
         - stage: rush build && heft test
-          language: minimal
           script:
               - set -e
 

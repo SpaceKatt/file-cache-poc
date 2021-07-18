@@ -34,7 +34,7 @@ module.exports = {
         'prettier/prettier': [2, { singleQuote: true, tabWidth: 4 }],
         'import/no-unresolved': 0,
         quotes: [2, 'single', { avoidEscape: true }],
-        indent: ['error', 4],
+        indent: ['error', 4, { SwitchCase: 1 }],
         'import/order': [
             2,
             {

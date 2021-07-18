@@ -2,9 +2,11 @@
   "name": "cache-poc",
   "version": "1.0.0",
   "description": "File-based cache PoC",
-  "main": "lib/index.js",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b .",
+    "start": "npm run build && node build/src/index.js",
+    "test": "jest --colors --verbose"
   },
   "repository": {
     "type": "git",

@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "tsc -b .",
+    "lint": "eslint -c .eslint.js './src/**/*.ts'",
     "start": "npm run build && node build/src/index.js",
     "test": "jest --colors --verbose"
   },

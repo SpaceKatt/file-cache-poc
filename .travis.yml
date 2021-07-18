@@ -1,0 +1,22 @@
+jobs:
+  include:
+    - stage: rush build && heft test
+      language: minimal
+      script:
+        - set -e
+
+        - echo 'Installing build toolchain...' && echo -en 'travis_fold:start:install\\r'
+        - sudo apt update
+        - sudo apt nodejs node-typescript
+        - echo -en 'travis_fold:end:install\\r'
+
+        - echo 'Building projects in monorepo...' && echo -en 'travis_fold:start:build\\r'
+        - npm i
+        - npm run build
+        - echo -en 'travis_fold:end:build\\r'
+
+        - echo 'Testing package...' && echo -en 'travis_fold:start:testminesweeper\\r'
+        - npm run test
+        - echo -en 'travis_fold:end:testminesweeper\\r'
+
+        - echo 'All application tests run successfully'

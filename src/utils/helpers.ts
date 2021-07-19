@@ -31,6 +31,7 @@ export const writeCompressedFile = async (
     const source = Readable.from(JSON.stringify(data));
     const sink = createWriteStream(outPath);
     await pipe(source, gzip, sink);
+    await sink.close();
 };
 
 const do_unzip = promisify(unzip);
@@ -46,6 +47,7 @@ export const readCompressedFile = async (inPath: string): Promise<any> => {
     await pfs.access(inPath);
     const fh = await pfs.open(inPath, 'r');
     const data = await fh.readFile();
+    await fh.close();
     const result = await do_unzip(data);
     return JSON.parse(result.toString());
 };
@@ -66,6 +68,7 @@ export const getRequest = async (
             if (reason.response!.status === 304) {
                 return undefined;
             }
+            console.log(reason);
 
             throw new Error('No valid response from GET request');
         });

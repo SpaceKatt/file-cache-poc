@@ -1,3 +1,4 @@
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import * as pfs from 'fs/promises';
 import { pipeline, Readable } from 'stream';
@@ -46,4 +47,24 @@ export const readCompressedFile = async (inPath: string): Promise<any> => {
     const data = await fh.readFile();
     const result = await do_unzip(data);
     return JSON.parse(result.toString());
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getRequest = async (
+    path: string,
+    headers: any,
+): Promise<AxiosResponse | undefined> => {
+    const config = headers ? { headers: { ...headers } } : undefined;
+    return await axios
+        .get(path, config)
+        .then((response: AxiosResponse) => {
+            return response;
+        })
+        .catch((reason: AxiosError) => {
+            if (reason.response!.status === 304) {
+                return undefined;
+            }
+
+            throw new Error('No valid response from GET request');
+        });
 };

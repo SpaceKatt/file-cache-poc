@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+
 import { createWriteStream } from 'fs';
 import * as pfs from 'fs/promises';
 import { pipeline, Readable } from 'stream';
@@ -49,9 +50,9 @@ export const readCompressedFile = async (inPath: string): Promise<any> => {
     return JSON.parse(result.toString());
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getRequest = async (
     path: string,
+    // eslint-disable-next-line
     headers: any,
 ): Promise<AxiosResponse | undefined> => {
     const config = headers ? { headers: { ...headers } } : undefined;
@@ -61,6 +62,7 @@ export const getRequest = async (
             return response;
         })
         .catch((reason: AxiosError) => {
+            // eslint-disable-next-line
             if (reason.response!.status === 304) {
                 return undefined;
             }

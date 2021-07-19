@@ -11,6 +11,7 @@ export interface OrgInfo {
 
 export interface GitHubCachePayload {
     etag: string;
+    // eslint-disable-next-line
     data: any;
 }
 
@@ -41,17 +42,12 @@ export class GitHubService {
     }
 
     async getOrgInfo(org: string): Promise<OrgInfo> {
-        const etag = 'ree';
-        const data = 'cola';
-
         const orgPath = this.getOrgPath(org);
         // add etag here for caching
         const cachedOrg = (await this.cache.get(orgPath)) as GitHubCachePayload;
 
         const cachedHeaders = cachedOrg
-            ? {
-                  'If-None-Match': cachedOrg.etag,
-              }
+            ? { 'If-None-Match': cachedOrg.etag }
             : {};
 
         const orgData = await getRequest(orgPath, {

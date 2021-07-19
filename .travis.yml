@@ -9,7 +9,7 @@ jobs:
 
               - echo 'Installing build toolchain...' && echo -en 'travis_fold:start:install\\r'
               - sudo apt update
-              - sudo apt -y nodejs node-typescript eslint
+              - sudo apt install -y nodejs node-typescript eslint
               - echo -en 'travis_fold:end:install\\r'
 
               - echo 'Building projects in monorepo...' && echo -en 'travis_fold:start:build\\r'

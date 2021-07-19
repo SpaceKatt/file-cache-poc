@@ -14,6 +14,12 @@ export const hexToUtf = (s: string): string => {
 
 const pipe = promisify(pipeline);
 
+/**
+ * Compresses data and writes it to a file.
+ *
+ * @param data Data to compress and write
+ * @param outPath path to write compressed data to
+ */
 export const writeCompressedFile = async (
     // eslint-disable-next-line
     data: any,
@@ -28,6 +34,12 @@ export const writeCompressedFile = async (
 
 const do_unzip = promisify(unzip);
 
+/**
+ * Reads compressed data from a file.
+ *
+ * @param inPath path to read compressed data from
+ * @returns uncompressed data
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const readCompressedFile = async (inPath: string): Promise<any> => {
     await pfs.access(inPath);

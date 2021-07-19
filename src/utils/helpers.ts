@@ -1,9 +1,8 @@
-import * as pfs from 'fs/promises';
-
-import { createGzip, gzip, unzip } from 'zlib';
-import { promisify } from 'util';
-import { pipeline, Readable } from 'stream';
 import { createWriteStream } from 'fs';
+import * as pfs from 'fs/promises';
+import { pipeline, Readable } from 'stream';
+import { promisify } from 'util';
+import { createGzip, unzip } from 'zlib';
 
 export const utfToHex = (s: string): string => {
     return Buffer.from(s, 'utf-8').toString('hex');
@@ -16,7 +15,9 @@ export const hexToUtf = (s: string): string => {
 const pipe = promisify(pipeline);
 
 export const writeCompressedFile = async (
+    // eslint-disable-next-line
     data: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     outPath: string,
 ): Promise<void> => {
     const gzip = createGzip();
@@ -27,6 +28,7 @@ export const writeCompressedFile = async (
 
 const do_unzip = promisify(unzip);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const readCompressedFile = async (inPath: string): Promise<any> => {
     await pfs.access(inPath);
     const fh = await pfs.open(inPath, 'r');

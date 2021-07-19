@@ -1,7 +1,3 @@
-import * as fs from 'fs';
-import * as pfs from 'fs/promises';
-import * as path from 'path';
-
 import { Cache } from '../interfaces';
 import {
     readCompressedFile,
@@ -9,8 +5,11 @@ import {
     writeCompressedFile,
 } from '../utils/helpers';
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 export class FileCache implements Cache {
-    static cachePathPrefix: string = 'node_modules/.cache';
+    static cachePathPrefix = 'node_modules/.cache';
 
     private cachePath: string;
 
@@ -30,6 +29,7 @@ export class FileCache implements Cache {
         return path.join(this.cachePath, encodedKey);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async get(key: string): Promise<any | undefined> {
         const keyPath = this.getCachePath(key);
         try {
@@ -40,6 +40,7 @@ export class FileCache implements Cache {
         }
     }
 
+    // eslint-disable-next-line
     async set(key: string, data: any): Promise<void> {
         const keyPath = this.getCachePath(key);
         await writeCompressedFile(data, keyPath);

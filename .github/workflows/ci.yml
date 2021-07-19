@@ -22,7 +22,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - run: sudo apt install -y node-typescript
             - run: npm i -g eslint jest
-            - run: npm run lint
             - run: npm i
+            - run: npm run lint
             - run: npm run build --if-present
             - run: npm run test

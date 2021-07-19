@@ -1,6 +1,8 @@
 os: linux
 dist: xenial
-language: shell
+language: node_js
+node_js:
+    - '14.16.0'
 jobs:
     include:
         - stage: rush build && heft test
@@ -9,11 +11,11 @@ jobs:
 
               - echo 'Installing build toolchain...' && echo -en 'travis_fold:start:install\\r'
               - sudo apt update
-              - sudo apt install -y nodejs node-typescript
+              - sudo apt install -y node-typescript
               - echo -en 'travis_fold:end:install\\r'
 
               - echo 'Linting project...' && echo -en 'travis_fold:start:lint\\r'
-              - npm install -g eslint
+              - npm install -g eslint jest
               - npm run lint
               - echo -en 'travis_fold:end:lint\\r'
 

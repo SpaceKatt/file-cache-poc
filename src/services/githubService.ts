@@ -9,6 +9,10 @@ export interface OrgInfo {
     numberOfRepos: number;
 }
 
+export interface OrgRepo {
+    name: string;
+}
+
 export interface GitHubCachePayload {
     etag: string;
     // eslint-disable-next-line
@@ -26,6 +30,7 @@ export class GitHubService {
         Accept: 'application/vnd.github.v3+json',
     };
     static readonly orgRoute = '/orgs';
+    static readonly maxRepoPerPage = 100;
 
     private cache: Cache;
 
@@ -54,15 +59,14 @@ export class GitHubService {
             ...GitHubService.defaultHeaders,
         });
 
-        // If undefined, then 304 indicates no update
+        // If undefined, then 304 indicates no update at service (use cached)
         if (!response) {
             console.log('used cache');
             return cachedData.data;
         }
-        console.log('did NOT used cache');
+        console.log('did NOT use cache');
 
         const mappedData = dataMap(response);
-        console.log(mappedData);
 
         // don't await cache set
         this.cache.set(path, {
@@ -88,5 +92,42 @@ export class GitHubService {
 
         const orgInfo = await this.getPathWithCache(orgPath, mapOrgInfo);
         return orgInfo;
+    }
+
+    private getOrgRepoPaths(org: string, orgInfo: OrgInfo): string[] {
+        const numPages = Math.ceil(
+            orgInfo.numberOfRepos / GitHubService.maxRepoPerPage,
+        );
+
+        const orgRepoPaths = [];
+
+        for (let i = 1; i <= numPages; i++) {
+            const prefix = `${GitHubService.apiHost}${GitHubService.orgRoute}/${org}`;
+            const qs = `per_page=${GitHubService.maxRepoPerPage}&page=${i}`;
+            orgRepoPaths.push(`${prefix}/repos?${qs}`);
+        }
+        console.log(orgRepoPaths);
+
+        return orgRepoPaths;
+    }
+
+    async getOrgRepos(org: string): Promise<OrgRepo[]> {
+        const orgInfo = await this.getOrgInfo(org);
+        const repoPaths = this.getOrgRepoPaths(org, orgInfo);
+        const mapRepoData = (resp: AxiosResponse): OrgRepo => {
+            return resp.data.map((x: any) => {
+                return { name: x.name };
+            });
+        };
+
+        const processPath = async (path: string) => {
+            return this.getPathWithCache(path, mapRepoData);
+        };
+
+        const orgRepos = Promise.all(repoPaths.map(processPath));
+        return (await orgRepos).reduce(
+            (accumulator, value) => accumulator.concat(value),
+            [],
+        );
     }
 }

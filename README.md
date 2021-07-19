@@ -1,5 +1,5 @@
 # Cache Proof-of-Concept
 
-[![Build Status](https://travis-ci.com/SpaceKatt/file-cache-poc.svg?branch=main)](https://travis-ci.com/SpaceKatt/file-cache-poc)
+[![Node.js CI](https://github.com/SpaceKatt/file-cache-poc/actions/workflows/ci.yml/badge.svg)](https://github.com/SpaceKatt/file-cache-poc/actions/workflows/ci.yml)
 
 File-based cache...

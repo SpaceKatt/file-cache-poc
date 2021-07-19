@@ -33,8 +33,8 @@ export class FileCache implements Cache {
     async get(key: string): Promise<any | undefined> {
         const keyPath = this.getCachePath(key);
         try {
-            const buff = await readCompressedFile(keyPath);
-            return JSON.parse(buff.toString());
+            const data = await readCompressedFile(keyPath);
+            return data;
         } catch {
             return undefined;
         }

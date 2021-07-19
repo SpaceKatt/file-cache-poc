@@ -23,7 +23,6 @@ const pipe = promisify(pipeline);
 export const writeCompressedFile = async (
     // eslint-disable-next-line
     data: any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     outPath: string,
 ): Promise<void> => {
     const gzip = createGzip();
@@ -46,5 +45,5 @@ export const readCompressedFile = async (inPath: string): Promise<any> => {
     const fh = await pfs.open(inPath, 'r');
     const data = await fh.readFile();
     const result = await do_unzip(data);
-    return result;
+    return JSON.parse(result.toString());
 };

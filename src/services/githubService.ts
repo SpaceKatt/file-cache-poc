@@ -2,7 +2,7 @@ import { Cache, CacheType } from '../interfaces';
 import { CacheFactory, CacheFactoryOpts } from '../factories';
 import { getRequest } from '../utils/helpers';
 
-// import axios from 'axios';
+import { AxiosResponse } from 'axios';
 
 export interface OrgInfo {
     name: string;
@@ -37,39 +37,56 @@ export class GitHubService {
         this.cache = CacheFactory.getInstance(cacheFactoryOpts);
     }
 
+    private async getPathWithCache(
+        path: string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dataMap: (r: AxiosResponse) => any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): Promise<any> {
+        const cachedData = (await this.cache.get(path)) as GitHubCachePayload;
+
+        const cachedHeaders = cachedData
+            ? { 'If-None-Match': cachedData.etag }
+            : {};
+
+        const response = await getRequest(path, {
+            ...cachedHeaders,
+            ...GitHubService.defaultHeaders,
+        });
+
+        // If undefined, then 304 indicates no update
+        if (!response) {
+            console.log('used cache');
+            return cachedData.data;
+        }
+        console.log('did NOT used cache');
+
+        const mappedData = dataMap(response);
+        console.log(mappedData);
+
+        // don't await cache set
+        this.cache.set(path, {
+            etag: response.headers.etag,
+            data: mappedData,
+        });
+
+        return mappedData;
+    }
+
     private getOrgPath(org: string): string {
         return `${GitHubService.apiHost}${GitHubService.orgRoute}/${org}`;
     }
 
     async getOrgInfo(org: string): Promise<OrgInfo> {
         const orgPath = this.getOrgPath(org);
-        // add etag here for caching
-        const cachedOrg = (await this.cache.get(orgPath)) as GitHubCachePayload;
-
-        const cachedHeaders = cachedOrg
-            ? { 'If-None-Match': cachedOrg.etag }
-            : {};
-
-        const orgData = await getRequest(orgPath, {
-            ...cachedHeaders,
-            ...GitHubService.defaultHeaders,
-        });
-
-        // If undefined, then 304 indicates no update
-        if (!orgData) {
-            console.log('used cache');
-            return cachedOrg.data;
-        }
-        console.log('did NOT used cache');
-
-        const orgInfo: OrgInfo = {
-            name: org,
-            numberOfRepos: orgData.data.public_repos,
+        const mapOrgInfo = (resp: AxiosResponse): OrgInfo => {
+            return {
+                name: resp.data.name,
+                numberOfRepos: resp.data.public_repos,
+            };
         };
 
-        // don't await cache set
-        this.cache.set(orgPath, { etag: orgData.headers.etag, data: orgInfo });
-
+        const orgInfo = await this.getPathWithCache(orgPath, mapOrgInfo);
         return orgInfo;
     }
 }

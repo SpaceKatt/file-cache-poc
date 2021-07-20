@@ -74,6 +74,12 @@ export const getRequest = async (
         });
 };
 
+const DELAY_MS_BETWEEN_REQUESTS = 300;
+
+export const delay = async (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms, ''));
+};
+
 export const getRequestWithRetry = async (
     path: string,
     // eslint-disable-next-line
@@ -88,6 +94,7 @@ export const getRequestWithRetry = async (
                 `Request "${path}" failed. Retrying ${retryCount} more times...`,
             );
             retryCount--;
+            await delay(DELAY_MS_BETWEEN_REQUESTS);
         }
     }
 

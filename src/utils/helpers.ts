@@ -73,3 +73,23 @@ export const getRequest = async (
             throw new Error('No valid response from GET request');
         });
 };
+
+export const getRequestWithRetry = async (
+    path: string,
+    // eslint-disable-next-line
+    headers: any,
+    retryCount: number,
+): Promise<AxiosResponse | undefined> => {
+    while (retryCount >= 0) {
+        try {
+            return await getRequest(path, headers);
+        } catch {
+            console.info(
+                `Request "${path}" failed. Retrying ${retryCount} more times...`,
+            );
+            retryCount--;
+        }
+    }
+
+    throw new Error(`Request "${path}" failed more than ${retryCount} times.`);
+};
